@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة مركز السنة والمتون</title>
+    <title>مركز سعد بن معاذ للسنة والمتون</title>
     <style>
         :root {
             --primary-green: #2c5e43;
@@ -22,11 +22,18 @@
         header {
             background-color: var(--primary-green);
             color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 15px 10px;
+            text-align: center;
             border-bottom: 3px solid var(--accent-gold);
+        }
+        header h3 {
+            margin: 0 0 5px 0;
+            font-size: 13px;
+            color: var(--accent-gold);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 16px;
         }
         .container {
             max-width: 600px;
@@ -111,7 +118,7 @@
             color: var(--primary-green);
         }
         
-        /* شاشة تسجيل الدخول */
+        /* شاشة تسجيل الدخول الآمنة والنظيفة */
         #login-screen {
             position: fixed;
             top: 0;
@@ -132,11 +139,9 @@
             max-width: 400px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             text-align: center;
-            max-height: 90vh;
-            overflow-y: auto;
         }
 
-        /* نافذة سجل المعلمة للطالبة */
+        /* نافذة سجل الطالبة */
         #studentModal {
             position: fixed;
             top: 0;
@@ -207,24 +212,26 @@
 </head>
 <body>
 
-    <!-- شاشة تسجيل الدخول العامة (للمعلمات، الإدارة، والطالبات) -->
+    <!-- شاشة تسجيل الدخول -->
     <div id="login-screen">
         <div class="login-card">
-            <h2 style="color: var(--primary-green); margin-top: 0;">🌿 مركز السنة والمتون</h2>
-            <p style="color: #666; font-size: 13px;">أدخل اسمك والكود الخاص بك (للمعلمة: t1-t14 | للإدارة: admin123 | للطالبة: كود الطالبة الخاص)</p>
+            <h3 style="color: var(--primary-green); margin-top: 0; font-size: 13px;">وزارة الأوقاف والشؤون الإسلامية بنغازي</h3>
+            <h2 style="color: var(--primary-green); margin: 5px 0 15px 0; font-size: 17px;">مركز السنة لتحفيظ المتون العلمية والسنة النبوية<br><span style="color: var(--accent-gold); font-size: 14px;">(مركز سعد بن معاذ)</span></h2>
+            <p style="color: #666; font-size: 12px; margin-bottom: 20px;">الرجاء إدخال اسمك والكود المخصص لك للمتابعة</p>
+            
             <div class="form-group" style="text-align: right;">
                 <label>الاسم الكريم:</label>
-                <input type="text" id="userNameInput" placeholder="أدخل اسمك...">
+                <input type="text" id="userNameInput" placeholder="اكتب اسمك هنا...">
             </div>
             <div class="form-group" style="text-align: right;">
                 <label>كود الدخول السري:</label>
-                <input type="password" id="userCodeInput" placeholder="أدخل الكود...">
+                <input type="password" id="userCodeInput" placeholder="أدخل الكود الخاص بك...">
             </div>
             <button class="btn-save" onclick="login()">تسجيل الدخول</button>
         </div>
     </div>
 
-    <!-- نافذة سجل الطالبة (للمعلمة والإدارة) -->
+    <!-- نافذة سجل الطالبة -->
     <div id="studentModal">
         <div class="modal-card">
             <h3 id="modalStudentName" style="color: var(--primary-green); margin-top: 0; border-bottom: 2px solid var(--accent-gold); padding-bottom: 8px;">سجل الطالبة</h3>
@@ -249,7 +256,7 @@
         </div>
     </div>
 
-    <!-- لوحة تحكم الطالبة الخاصة (تظهر فقط عند تسجيل دخول الطالبة بكودها) -->
+    <!-- لوحة تحكم الطالبة الخاصة -->
     <div id="student-portal" style="display:none;" class="container">
         <div class="card">
             <h2 style="color: var(--primary-green); margin-top:0;">🌟 أهلاً بك يا طالبة العلم: <span id="portalStudentName"></span></h2>
@@ -279,8 +286,8 @@
     <!-- لوحة المعلمة والإدارة -->
     <div id="main-system-ui">
         <header>
-            <h2>🌿 مركز السنة والمتون</h2>
-            <div id="headerTitle" style="font-size: 13px;">النظام الموحد</div>
+            <h3>وزارة الأوقاف والشؤون الإسلامية بنغازي</h3>
+            <h1>مركز السنة لتحفيظ المتون العلمية والسنة النبوية (مركز سعد بن معاذ)</h1>
         </header>
 
         <div class="container">
@@ -313,8 +320,8 @@
                         </select>
                     </div>
                     <div class="form-group" style="display: flex; gap: 10px;">
-                        <div style="flex:1;"><label>من (حديث/صفحة):</label><input type="text" id="fromPart" placeholder="مثال: حديث 1"></div>
-                        <div style="flex:1;"><label>إلى:</label><input type="text" id="toPart" placeholder="مثال: حديث 5"></div>
+                        <div style="flex:1;"><label>من (حديث/صفحة):</label><input type="text" id="fromPart" placeholder="حديث 1"></div>
+                        <div style="flex:1;"><label>إلى:</label><input type="text" id="toPart" placeholder="حديث 5"></div>
                     </div>
                     <div class="form-group">
                         <label>التقييم (من 1 إلى 10):</label>
@@ -373,7 +380,7 @@
         <!-- الشريط السفلي للتنقل -->
         <nav class="bottom-nav">
             <a class="nav-item active" onclick="switchTab('home', 'الرئيسية', this)"><span>🏠</span>الرئيسية</a>
-            <a class="nav-item" onclick="switchTab('recitation', 'التسميع', this)"><span>🎙️</span>التسميع</a>
+            <a class="nav-item" onclick="switchTab('recitation', 'التسميع', this)"><span>🎙️️</span>التسميع</a>
             <a class="nav-item" onclick="switchTab('students', 'الطالبات', this)"><span>👥</span>الطالبات</a>
             <a class="nav-item" onclick="switchTab('reports', 'التقارير', this)"><span>📊</span>التقارير</a>
         </nav>
@@ -390,34 +397,31 @@
             const code = document.getElementById('userCodeInput').value.trim().toLowerCase();
             
             if(!name || !code) {
-                alert('الرجاء إدخال الاسم والكود السري');
+                alert('الرجاء إدخال الاسم الكريم وكود الدخول السري');
                 return;
             }
 
-            // فحص هل الدخول للإدارة
             if(code === 'admin123') {
                 currentRole = 'الإدارة العامة';
                 currentUser = name;
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('welcomeMsg').textContent = `أهلاً بك يا أستاذة ${name} 🌷`;
-                document.getElementById('roleInfoMsg').textContent = `الصلاحية: ${currentRole} - مركز السنة والمتون`;
+                document.getElementById('roleInfoMsg').textContent = `الصلاحية: ${currentRole} - مركز سعد بن معاذ`;
                 renderStudents();
                 return;
             }
 
-            // فحص هل الدخول لمعلمة (t1 إلى t14)
             if(code.startsWith('t')) {
                 const circleNum = code.replace('t', '');
                 currentRole = `الحلقة (${circleNum})`;
                 currentUser = name;
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('welcomeMsg').textContent = `أهلاً بك يا أستاذة ${name} 🌷`;
-                document.getElementById('roleInfoMsg').textContent = `الصلاحية: ${currentRole} - مركز السنة والمتون`;
+                document.getElementById('roleInfoMsg').textContent = `الصلاحية: ${currentRole} - مركز سعد بن معاذ`;
                 renderStudents();
                 return;
             }
 
-            // فحص هل الدخول للطالبة أو ولي الأمر عبر كود الطالبة
             const targetStudent = students.find(s => s.studentCode === code);
             if(targetStudent) {
                 document.getElementById('login-screen').style.display = 'none';
@@ -448,7 +452,7 @@
                             <tr>
                                 <td>${r.date}</td>
                                 <td><small>${r.session.includes('الإثنين') ? 'عن بعد' : 'حضوري'}</small></td>
-                                ><td>من ${r.from} إلى ${r.to}</td>
+                                <td>من ${r.from} إلى ${r.to}</td>
                                 <td><strong>${r.rating}</strong> / 10</td>
                             </tr>
                         `;
@@ -457,13 +461,12 @@
                 return;
             }
 
-            alert('كود الدخول غير صحيح! تأكد من كود المعلمة أو الإدارة أو كود الطالبة الخاص.');
+            alert('كود الدخول غير صحيح! تأكد من كتابة الكود بشكل صحيح (مثل t11 للحلقة الحادية عشر، أو admin123 للإدارة).');
         }
 
         function switchTab(tabId, titleText, element) {
             document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
             document.getElementById('section-' + tabId).classList.add('active');
-            document.getElementById('headerTitle').textContent = titleText;
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             element.classList.add('active');
             if(tabId === 'students' || tabId === 'recitation') {
@@ -475,7 +478,4 @@
             const name = document.getElementById('newStudentName').value.trim();
             const book = document.getElementById('newStudentBook').value.trim();
             if(!name || !book) {
-                alert('الرجاء إدخال اسم الطالبة والمقرّر');
-                return;
-            }
-        
+                alert('ا
