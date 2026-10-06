@@ -1,4 +1,4 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -98,6 +98,15 @@
             font-weight: bold;
             cursor: pointer;
         }
+        .btn-delete {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -113,9 +122,30 @@
             background-color: var(--light-green);
             color: var(--primary-green);
         }
-        .status-done { color: #2e7d32; font-weight: bold; background: #e8f5e9; padding: 4px 8px; border-radius: 4px; }
-        .status-pending { color: #e65100; font-weight: bold; background: #fff3e0; padding: 4px 8px; border-radius: 4px; }
         
+        /* واجهة تسجيل الدخول */
+        #login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(44, 94, 67, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .login-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
         nav.bottom-nav {
             position: fixed;
             bottom: 0;
@@ -150,6 +180,27 @@
 </head>
 <body>
 
+    <!-- شاشة تسجيل الدخول -->
+    <div id="login-screen">
+        <div class="login-card">
+            <h2 style="color: var(--primary-green); margin-top: 0;">🌿 منصة إتقان</h2>
+            <p style="color: #666; font-size: 14px;">الرجاء تسجيل الدخول للمتابعة</p>
+            <div class="form-group" style="text-align: right;">
+                <label>اسم المعلمة:</label>
+                <input type="text" id="teacherNameInput" placeholder="أدخل اسمك الكريم...">
+            </div>
+            <div class="form-group" style="text-align: right;">
+                <label>اختر الحلقة:</label>
+                <select id=" حلقهInput">
+                    <option>حلقة السنة النبوية</option>
+                    <option>حلقة المتون العلمية</option>
+                    <option>حلقة القرآن الكريم</option>
+                </select>
+            </div>
+            <button class="btn-save" onclick="login()">دخول للوحة المعلمة</button>
+        </div>
+    </div>
+
     <header>
         <h2>🌿 منصة إتقان</h2>
         <div id="headerTitle">لوحة المعلمة</div>
@@ -160,13 +211,13 @@
         <!-- 1. الرئيسية -->
         <div id="section-home" class="section-content active">
             <div class="card">
-                <h3 style="margin: 0 0 5px 0; color: var(--primary-green);">أهلاً بك يا أستاذة 🌷</h3>
+                <h3 id="welcomeMsg" style="margin: 0 0 5px 0; color: var(--primary-green);">أهلاً بك يا أستاذة 🌷</h3>
                 <p style="margin: 0; color: #666; font-size: 14px;">مرحباً بك في نظام إدارة مركز السنة والمتون العلمية</p>
             </div>
             <div class="stats-grid">
                 <div class="stat-card">
-                    <h3>عدد الطالبات</h3>
-                    <div class="number">18</div>
+                    <h3>إجمالي الطالبات</h3>
+                    <div class="number" id="totalStudentsCount">0</div>
                 </div>
                 <div class="stat-card">
                     <h3>تم تسميعهن اليوم</h3>
@@ -181,50 +232,53 @@
                 <h3 style="margin-top: 0; color: var(--primary-green);">🎙️ تسجيل التسميع الذكي</h3>
                 <div class="form-group">
                     <label>اختر الطالبة:</label>
-                    <select>
-                        <option>فاطمة محمد (آخر موضع: 15)</option>
-                        <option>عائشة علي (آخر موضع: 3)</option>
+                    <select id="recitationStudentSelect">
+                        <!-- يتم تعبئتها تلقائياً -->
                     </select>
                 </div>
                 <div class="form-group" style="display: flex; gap: 10px;">
-                    <div style="flex:1;"><label>من:</label><input type="number" placeholder="16"></div>
-                    <div style="flex:1;"><label>إلى:</label><input type="number" placeholder="20"></div>
+                    <div style="flex:1;"><label>من:</label><input type="number" id="fromVerse" placeholder="1"></div>
+                    <div style="flex:1;"><label>إلى:</label><input type="number" id="toVerse" placeholder="5"></div>
                 </div>
                 <div class="form-group">
                     <label>التقييم:</label>
-                    <select>
+                    <select id="ratingSelect">
                         <option>ممتاز</option>
                         <option>جيد جداً</option>
                         <option>جيد</option>
                     </select>
                 </div>
-                <button class="btn-save" onclick="alert('تم حفظ التسميع وتحديث آخر موضع تلقائياً بنجاح!')">حفظ التسميع</button>
+                <button class="btn-save" onclick="saveRecitation()">حفظ التسميع</button>
             </div>
         </div>
 
-        <!-- 3. السجل اليومي -->
-        <div id="section-daily" class="section-content">
+        <!-- 3. إدارة الطالبات -->
+        <div id="section-students" class="section-content">
             <div class="card">
-                <h3 style="margin-top: 0; color: var(--primary-green);">📅 السجل اليومي للحلقة</h3>
+                <h3 style="margin-top: 0; color: var(--primary-green);">➕ إضافة طالبة جديدة</h3>
+                <div class="form-group">
+                    <label>اسم الطالبة:</label>
+                    <input type="text" id="newStudentName" placeholder="أدخل اسم الطالبة الثلاثي...">
+                </div>
+                <div class="form-group">
+                    <label>المتن / المنهج:</label>
+                    <input type="text" id="newStudentBook" placeholder="مثال: الأربعون النووية">
+                </div>
+                <button class="btn-save" onclick="addStudent()">إضافة للطالبة</button>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-top: 0; color: var(--primary-green);">📋 قائمة طالبات الحلقة</h3>
                 <table>
                     <thead>
                         <tr>
                             <th>الطالبة</th>
                             <th>المتن</th>
-                            <th>الحالة</th>
+                            <th>حذف</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>فاطمة محمد</td>
-                            <td>الأربعون</td>
-                            <td><span class="status-done">✅ تم</span></td>
-                        </tr>
-                        <tr>
-                            <td>عائشة علي</td>
-                            <td>الأصول</td>
-                            <td><span class="status-pending">⏳ لم تسمع</span></td>
-                        </tr>
+                    <tbody id="studentsTableBody">
+                        <!-- تضاف الطالبات هنا ديناميكياً -->
                     </tbody>
                 </table>
             </div>
@@ -234,8 +288,8 @@
         <div id="section-admin" class="section-content">
             <div class="card">
                 <h3 style="margin-top: 0; color: var(--primary-green);">📊 لوحة الإدارة الشاملة</h3>
-                <p>إجمالي حلقات المركز: <strong>14 حلقة</strong>[span_1](start_span)[span_1](end_span)</p>
-                <p>إجمالي طالبات المركز: <strong>236 طالبة</strong>[span_2](start_span)[span_2](end_span)</p>
+                <p>المعلمة الحالية: <strong id="adminTeacherName">-</strong></p>
+                <p>حالة النظام: <strong style="color: #2e7d32;">يعمل بكفاءة عبر الإنترنت ✅</strong></p>
             </div>
         </div>
 
@@ -246,11 +300,11 @@
         <a class="nav-item active" onclick="switchTab('home', 'لوحة المعلمة', this)">
             <span>🏠</span>الرئيسية
         </a>
-        <a class="nav-item" onclick="switchTab('recitation', 'التسميع الذكي', this)">
+        <a class="nav-item" onclick="switchTab('recitation', 'التسميع', this)">
             <span>🎙️</span>التسميع
         </a>
-        <a class="nav-item" onclick="switchTab('daily', 'السجل اليومي', this)">
-            <span>📅</span>السجل
+        <a class="nav-item" onclick="switchTab('students', 'الطالبات', this)">
+            <span>👥</span>الطالبات
         </a>
         <a class="nav-item" onclick="switchTab('admin', 'الإدارة', this)">
             <span>📊</span>الإدارة
@@ -258,13 +312,100 @@
     </nav>
 
     <script>
+        // تخزين الطالبات في الذاكرة المحلية للجهاز
+        let students = JSON.parse(localStorage.getItem('itqan_students')) || [
+            { id: 1, name: 'فاطمة محمد', book: 'الأربعون النووية' },
+            { id: 2, name: 'عائشة علي', book: 'الأصول الثلاثة' }
+        ];
+
+        function login() {
+            const name = document.getElementById('teacherNameInput').value.trim();
+            if(!name) {
+                alert('الرجاء إدخال اسم المعلمة');
+                return;
+            }
+            document.getElementById('welcomeMsg').textContent = `أهلاً بك يا أستاذة ${name} 🌷`;
+            document.getElementById('adminTeacherName').textContent = name;
+            document.getElementById('login-screen').style.display = 'none';
+        }
+
         function switchTab(tabId, titleText, element) {
             document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
             document.getElementById('section-' + tabId).classList.add('active');
             document.getElementById('headerTitle').textContent = titleText;
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             element.classList.add('active');
+            if(tabId === 'students' || tabId === 'recitation') {
+                renderStudents();
+            }
         }
+
+        function addStudent() {
+            const name = document.getElementById('newStudentName').value.trim();
+            const book = document.getElementById('newStudentBook').value.trim();
+            if(!name || !book) {
+                alert('الرجاء إدخال اسم الطالبة والمتن');
+                return;
+            }
+            students.push({ id: Date.now(), name, book });
+            localStorage.setItem('itqan_students', JSON.stringify(students));
+            document.getElementById('newStudentName').value = '';
+            document.getElementById('newStudentBook').value = '';
+            renderStudents();
+            alert('تمت إضافة الطالبة بنجاح!');
+        }
+
+        function deleteStudent(id) {
+            students = students.filter(s => s.id !== id);
+            localStorage.setItem('itqan_students', JSON.stringify(students));
+            renderStudents();
+        }
+
+        function renderStudents() {
+            const tbody = document.getElementById('studentsTableBody');
+            const select = document.getElementById('recitationStudentSelect');
+            tbody.innerHTML = '';
+            select.innerHTML = '';
+
+            document.getElementById('totalStudentsCount').textContent = students.length;
+
+            if(students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="color:#777;">لا توجد طالبات مسجلات حتى الآن</td></tr>';
+                select.innerHTML = '<option>لا توجد طالبات</option>';
+                return;
+            }
+
+            students.forEach(s => {
+                // جدول إدارة الطالبات
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${s.name}</td>
+                        <td>${s.book}</td>
+                        <td><button class="btn-delete" onclick="deleteStudent(${s.id})">حذف</button></td>
+                    </tr>
+                `;
+                // قائمة التسميع
+                select.innerHTML += `<option value="${s.name}">${s.name} (${s.book})</option>`;
+            });
+        }
+
+        function saveRecitation() {
+            const student = document.getElementById('recitationStudentSelect').value;
+            const from = document.getElementById('fromVerse').value;
+            const to = document.getElementById('toVerse').value;
+            const rating = document.getElementById('ratingSelect').value;
+
+            if(!student || !from || !to) {
+                alert('الرجاء إكمال بيانات التسميع');
+                return;
+            }
+            alert(`تم حفظ تسميع الطالبة: ${student} بنجاح (${rating}) من ${from} إلى ${to}!`);
+            document.getElementById('fromVerse').value = '';
+            document.getElementById('toVerse').value = '';
+        }
+
+        // تشغيل أولي عند تحميل الصفحة
+        renderStudents();
     </script>
 </body>
 </html>
