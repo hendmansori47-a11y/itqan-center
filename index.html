@@ -76,6 +76,16 @@
             cursor: pointer;
             margin-top: 5px;
         }
+        .btn-action {
+            background-color: var(--accent-gold);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 3px;
+        }
         .btn-delete {
             background-color: #d9534f;
             color: white;
@@ -122,6 +132,34 @@
             max-width: 400px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* نافذة سجل المعلمة للطالبة */
+        #studentModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        .modal-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
         nav.bottom-nav {
@@ -169,129 +207,177 @@
 </head>
 <body>
 
-    <!-- شاشة تسجيل الدخول بالأكواد المخصصة -->
+    <!-- شاشة تسجيل الدخول العامة (للمعلمات، الإدارة، والطالبات) -->
     <div id="login-screen">
         <div class="login-card">
             <h2 style="color: var(--primary-green); margin-top: 0;">🌿 مركز السنة والمتون</h2>
-            <p style="color: #666; font-size: 13px;">أدخل كود الدخول الخاص بك (للمعلمة: t1 إلى t14) أو (للإدارة: admin123)</p>
+            <p style="color: #666; font-size: 13px;">أدخل اسمك والكود الخاص بك (للمعلمة: t1-t14 | للإدارة: admin123 | للطالبة: كود الطالبة الخاص)</p>
             <div class="form-group" style="text-align: right;">
-                <label>اسم المعلمة أو الإدارة:</label>
-                <input type="text" id="userNameInput" placeholder="أدخل اسمك الكريم...">
+                <label>الاسم الكريم:</label>
+                <input type="text" id="userNameInput" placeholder="أدخل اسمك...">
             </div>
             <div class="form-group" style="text-align: right;">
                 <label>كود الدخول السري:</label>
-                <input type="password" id="userCodeInput" placeholder="أدخل الكود (مثال: t1 للحلقة الأولى)">
+                <input type="password" id="userCodeInput" placeholder="أدخل الكود...">
             </div>
             <button class="btn-save" onclick="login()">تسجيل الدخول</button>
         </div>
     </div>
 
-    <header>
-        <h2>🌿 مركز السنة والمتون</h2>
-        <div id="headerTitle" style="font-size: 13px;">النظام الموحد</div>
-    </header>
-
-    <div class="container">
-
-        <!-- 1. الرئيسية -->
-        <div id="section-home" class="section-content active">
-            <div class="card">
-                <h3 id="welcomeMsg" style="margin: 0 0 5px 0; color: var(--primary-green);">أهلاً بك 🌷</h3>
-                <p id="roleInfoMsg" style="margin: 0; color: #666; font-size: 14px;"></p>
-            </div>
-            <div class="card" style="text-align: center;">
-                <h3 style="color: var(--primary-green); margin-top:0;">إحصائيات المتابعة</h3>
-                <p>عدد الطالبات المسجلات: <strong id="totalStudentsCount" style="color: var(--accent-gold); font-size: 20px;">0</strong></p>
-            </div>
+    <!-- نافذة سجل الطالبة (للمعلمة والإدارة) -->
+    <div id="studentModal">
+        <div class="modal-card">
+            <h3 id="modalStudentName" style="color: var(--primary-green); margin-top: 0; border-bottom: 2px solid var(--accent-gold); padding-bottom: 8px;">سجل الطالبة</h3>
+            <p><strong>كود الطالبة:</strong> <span id="modalStudentCodeText" style="color: var(--primary-green); font-weight: bold;"></span></p>
+            <p><strong>المقرر:</strong> <span id="modalStudentBook"></span></p>
+            <p><strong>متوسط التقييم العام:</strong> <span id="modalStudentAverage" style="color: var(--accent-gold); font-weight: bold; font-size: 18px;">-</span> من 10</p>
+            
+            <h4 style="color: var(--primary-green); margin-top: 15px;">📅 سجل التسميع اليومي:</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>النوع</th>
+                        <th>من - إلى</th>
+                        <th>الدرجة</th>
+                    </tr>
+                </thead>
+                <tbody id="modalHistoryBody"></tbody>
+            </table>
+            
+            <button class="btn-save" onclick="closeModal()" style="background-color: #666; margin-top: 20px;">إغلاق السجل</button>
         </div>
-
-        <!-- 2. تسجيل التسميع -->
-        <div id="section-recitation" class="section-content">
-            <div class="card">
-                <h3 style="margin-top: 0; color: var(--primary-green);">🎙️ تسجيل تسميع السنة والمتون</h3>
-                <div class="form-group">
-                    <label>اختر الطالبة:</label>
-                    <select id="recitationStudentSelect"></select>
-                </div>
-                <div class="form-group">
-                    <label>موعد الحلقة:</label>
-                    <select id="sessionType">
-                        <option>حلقة عن بعد (يوم الإثنين)</option>
-                        <option>حلقة حضورية (يوم الخميس)</option>
-                    </select>
-                </div>
-                <div class="form-group" style="display: flex; gap: 10px;">
-                    <div style="flex:1;"><label>من (حديث/صفحة):</label><input type="text" id="fromPart" placeholder="مثال: حديث 1"></div>
-                    <div style="flex:1;"><label>إلى:</label><input type="text" id="toPart" placeholder="مثال: حديث 5"></div>
-                </div>
-                <div class="form-group">
-                    <label>التقييم:</label>
-                    <select id="ratingSelect">
-                        <option>ممتاز 🌟</option>
-                        <option>جيد جداً 👍</option>
-                        <option>جيد 👌</option>
-                    </select>
-                </div>
-                <button class="btn-save" onclick="saveRecitation()">حفظ التسميع</button>
-            </div>
-        </div>
-
-        <!-- 3. إدارة الطالبات -->
-        <div id="section-students" class="section-content">
-            <div class="card">
-                <h3 style="margin-top: 0; color: var(--primary-green);">➕ إضافة طالبة جديدة</h3>
-                <div class="form-group">
-                    <label>اسم الطالبة الثلاثي:</label>
-                    <input type="text" id="newStudentName" placeholder="أدخل اسم الطالبة...">
-                </div>
-                <div class="form-group">
-                    <label>المتن أو الكتاب المقرّر:</label>
-                    <input type="text" id="newStudentBook" placeholder="مثال: الأربعون النووية / الأصول الثلاثة">
-                </div>
-                <button class="btn-save" onclick="addStudent()">حفظ الطالبة</button>
-            </div>
-
-            <div class="card">
-                <h3 style="margin-top: 0; color: var(--primary-green);">📋 قائمة الطالبات</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>الطالبة</th>
-                            <th>المتن</th>
-                            <th>حذف</th>
-                        </tr>
-                    </thead>
-                    <tbody id="studentsTableBody"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- 4. التقارير -->
-        <div id="section-reports" class="section-content">
-            <div class="card">
-                <h3 style="margin-top: 0; color: var(--primary-green);">📊 التقارير الأسبوعية والشهرية</h3>
-                <p style="font-size: 13px; color: #666;">تجهيز التقرير المطلوب لإرساله للإدارة يوم الخميس:</p>
-                
-                <button class="btn-save" onclick="generateReport('weekly')" style="background-color: #3b7a57;">📄 تجهيز التقرير الأسبوعي (يوم الخميس)</button>
-                <button class="btn-save" onclick="generateReport('monthly')" style="background-color: var(--accent-gold); margin-top: 10px;">📈 تجهيز التقرير الشهري الشامل</button>
-
-                <div id="reportOutputContainer" style="display:none;">
-                    <h4 id="reportTitle" style="color: var(--primary-green); margin-top: 20px; border-bottom: 2px solid var(--accent-gold); padding-bottom: 5px;"></h4>
-                    <div class="report-box" id="reportContent"></div>
-                    <button class="btn-save" onclick="copyReport()" style="background-color: #2e7d32; margin-top: 15px;">📋 نسخ التقرير لإرساله للإدارة</button>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    <!-- الشريط السفلي للتنقل -->
-    <nav class="bottom-nav">
-        <a class="nav-item active" onclick="switchTab('home', 'الرئيسية', this)"><span>🏠</span>الرئيسية</a>
-        <a class="nav-item" onclick="switchTab('recitation', 'التسميع', this)"><span>🎙️</span>التسميع</a>
-        <a class="nav-item" onclick="switchTab('students', 'الطالبات', this)"><span>👥</span>الطالبات</a>
-        <a class="nav-item" onclick="switchTab('reports', 'التقارير', this)"><span>📊</span>التقارير</a>
-    </nav>
+    <!-- لوحة تحكم الطالبة الخاصة (تظهر فقط عند تسجيل دخول الطالبة بكودها) -->
+    <div id="student-portal" style="display:none;" class="container">
+        <div class="card">
+            <h2 style="color: var(--primary-green); margin-top:0;">🌟 أهلاً بك يا طالبة العلم: <span id="portalStudentName"></span></h2>
+            <p><strong>حلقتك:</strong> <span id="portalStudentCircle"></span></p>
+            <p><strong>المتن المقرّر:</strong> <span id="portalStudentBook"></span></p>
+            <p><strong>كود الدخول الخاص بك:</strong> <span id="portalStudentCode" style="color: var(--accent-gold); font-weight: bold;"></span></p>
+            <p><strong>متوسط التقييم الشهري:</strong> <span id="portalStudentAvg" style="color: var(--primary-green); font-weight: bold; font-size: 18px;">-</span> من 10</p>
+        </div>
+
+        <div class="card">
+            <h3 style="color: var(--primary-green); margin-top:0;">📋 تقرير تسميعك التاريخي</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>النوع</th>
+                        <th>من - إلى</th>
+                        <th>التقييم</th>
+                    </tr>
+                </thead>
+                <tbody id="portalHistoryBody"></tbody>
+            </table>
+        </div>
+        <button class="btn-save" onclick="location.reload()" style="background-color: #d9534f;">تسجيل الخروج</button>
+    </div>
+
+    <!-- لوحة المعلمة والإدارة -->
+    <div id="main-system-ui">
+        <header>
+            <h2>🌿 مركز السنة والمتون</h2>
+            <div id="headerTitle" style="font-size: 13px;">النظام الموحد</div>
+        </header>
+
+        <div class="container">
+
+            <!-- 1. الرئيسية -->
+            <div id="section-home" class="section-content active">
+                <div class="card">
+                    <h3 id="welcomeMsg" style="margin: 0 0 5px 0; color: var(--primary-green);">أهلاً بك 🌷</h3>
+                    <p id="roleInfoMsg" style="margin: 0; color: #666; font-size: 14px;"></p>
+                </div>
+                <div class="card" style="text-align: center;">
+                    <h3 style="color: var(--primary-green); margin-top:0;">إحصائيات الحلقة</h3>
+                    <p>عدد الطالبات المسجلات: <strong id="totalStudentsCount" style="color: var(--accent-gold); font-size: 20px;">0</strong></p>
+                </div>
+            </div>
+
+            <!-- 2. تسجيل التسميع -->
+            <div id="section-recitation" class="section-content">
+                <div class="card">
+                    <h3 style="margin-top: 0; color: var(--primary-green);">🎙️ تسجيل تسميع السنة والمتون</h3>
+                    <div class="form-group">
+                        <label>اختر الطالبة:</label>
+                        <select id="recitationStudentSelect"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>موعد الحلقة:</label>
+                        <select id="sessionType">
+                            <option>حلقة عن بعد (يوم الإثنين)</option>
+                            <option>حلقة حضورية (يوم الخميس)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="display: flex; gap: 10px;">
+                        <div style="flex:1;"><label>من (حديث/صفحة):</label><input type="text" id="fromPart" placeholder="مثال: حديث 1"></div>
+                        <div style="flex:1;"><label>إلى:</label><input type="text" id="toPart" placeholder="مثال: حديث 5"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>التقييم (من 1 إلى 10):</label>
+                        <input type="number" id="ratingInput" min="1" max="10" placeholder="أدخل الدرجة (مثال: 9)">
+                    </div>
+                    <button class="btn-save" onclick="saveRecitation()">حفظ التسميع</button>
+                </div>
+            </div>
+
+            <!-- 3. إدارة الطالبات -->
+            <div id="section-students" class="section-content">
+                <div class="card">
+                    <h3 style="margin-top: 0; color: var(--primary-green);">➕ إضافة طالبة جديدة لحلقتك</h3>
+                    <div class="form-group">
+                        <label>اسم الطالبة الثلاثي:</label>
+                        <input type="text" id="newStudentName" placeholder="أدخل اسم الطالبة...">
+                    </div>
+                    <div class="form-group">
+                        <label>المتن أو الكتاب المقرّر:</label>
+                        <input type="text" id="newStudentBook" placeholder="مثال: الأربعون النووية">
+                    </div>
+                    <button class="btn-save" onclick="addStudent()">حفظ الطالبة وتوليد الكود</button>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-top: 0; color: var(--primary-green);">📋 طالبات حلقتك وأكوابهن الخاصة</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الطالبة والكود</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 4. التقارير -->
+            <div id="section-reports" class="section-content">
+                <div class="card">
+                    <h3 style="margin-top: 0; color: var(--primary-green);">📊 التقارير الأسبوعية والشهرية</h3>
+                    <button class="btn-save" onclick="generateReport('weekly')" style="background-color: #3b7a57;">📄 تجهيز التقرير الأسبوعي (يوم الخميس)</button>
+                    <button class="btn-save" onclick="generateReport('monthly')" style="background-color: var(--accent-gold); margin-top: 10px;">📈 تجهيز التقرير الشهري الشامل</button>
+
+                    <div id="reportOutputContainer" style="display:none;">
+                        <h4 id="reportTitle" style="color: var(--primary-green); margin-top: 20px; border-bottom: 2px solid var(--accent-gold); padding-bottom: 5px;"></h4>
+                        <div class="report-box" id="reportContent"></div>
+                        <button class="btn-save" onclick="copyReport()" style="background-color: #2e7d32; margin-top: 15px;">📋 نسخ التقرير لإرساله للإدارة</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- الشريط السفلي للتنقل -->
+        <nav class="bottom-nav">
+            <a class="nav-item active" onclick="switchTab('home', 'الرئيسية', this)"><span>🏠</span>الرئيسية</a>
+            <a class="nav-item" onclick="switchTab('recitation', 'التسميع', this)"><span>🎙️</span>التسميع</a>
+            <a class="nav-item" onclick="switchTab('students', 'الطالبات', this)"><span>👥</span>الطالبات</a>
+            <a class="nav-item" onclick="switchTab('reports', 'التقارير', this)"><span>📊</span>التقارير</a>
+        </nav>
+    </div>
 
     <script>
         let currentUser = "";
@@ -301,28 +387,77 @@
 
         function login() {
             const name = document.getElementById('userNameInput').value.trim();
-            const code = document.getElementById('userCodeInput').value.trim();
+            const code = document.getElementById('userCodeInput').value.trim().toLowerCase();
             
             if(!name || !code) {
                 alert('الرجاء إدخال الاسم والكود السري');
                 return;
             }
 
+            // فحص هل الدخول للإدارة
             if(code === 'admin123') {
                 currentRole = 'الإدارة العامة';
                 currentUser = name;
-            } else if(code.startsWith('t') && code.length >= 2) {
-                currentRole = `الحلقة (${code.toUpperCase()})`;
-                currentUser = name;
-            } else {
-                alert('كود الدخول غير صحيح! (أكواد المعلمات تبدأ بـ t1 إلى t14، وcode الإدارة admin123)');
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('welcomeMsg').textContent = `أهلاً بك يا أستاذة ${name} 🌷`;
+                document.getElementById('roleInfoMsg').textContent = `الصلاحية: ${currentRole} - مركز السنة والمتون`;
+                renderStudents();
                 return;
             }
 
-            document.getElementById('welcomeMsg').textContent = `أهلاً بك يا أستاذة ${name} 🌷`;
-            document.getElementById('roleInfoMsg').textContent = `الصلاحية: ${currentRole} - مركز السنة والمتون`;
-            document.getElementById('login-screen').style.display = 'none';
-            renderStudents();
+            // فحص هل الدخول لمعلمة (t1 إلى t14)
+            if(code.startsWith('t')) {
+                const circleNum = code.replace('t', '');
+                currentRole = `الحلقة (${circleNum})`;
+                currentUser = name;
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('welcomeMsg').textContent = `أهلاً بك يا أستاذة ${name} 🌷`;
+                document.getElementById('roleInfoMsg').textContent = `الصلاحية: ${currentRole} - مركز السنة والمتون`;
+                renderStudents();
+                return;
+            }
+
+            // فحص هل الدخول للطالبة أو ولي الأمر عبر كود الطالبة
+            const targetStudent = students.find(s => s.studentCode === code);
+            if(targetStudent) {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-system-ui').style.display = 'none';
+                document.getElementById('student-portal').style.display = 'block';
+
+                document.getElementById('portalStudentName').textContent = targetStudent.name;
+                document.getElementById('portalStudentCircle').textContent = targetStudent.role;
+                document.getElementById('portalStudentBook').textContent = targetStudent.book;
+                document.getElementById('portalStudentCode').textContent = targetStudent.studentCode;
+
+                const studentRecs = recitations.filter(r => r.student === targetStudent.name);
+                let avgText = "لم تبدأ التسميع بعد";
+                if(studentRecs.length > 0) {
+                    let sum = 0;
+                    studentRecs.forEach(r => sum += Number(r.rating));
+                    avgText = (sum / studentRecs.length).toFixed(1) + " / 10";
+                }
+                document.getElementById('portalStudentAvg').textContent = avgText;
+
+                const portalBody = document.getElementById('portalHistoryBody');
+                portalBody.innerHTML = '';
+                if(studentRecs.length === 0) {
+                    portalBody.innerHTML = '<tr><td colspan="4" style="color:#777;">لا توجد سجلات تسميع مسجلة حتى الآن</td></tr>';
+                } else {
+                    studentRecs.forEach(r => {
+                        portalBody.innerHTML += `
+                            <tr>
+                                <td>${r.date}</td>
+                                <td><small>${r.session.includes('الإثنين') ? 'عن بعد' : 'حضوري'}</small></td>
+                                ><td>من ${r.from} إلى ${r.to}</td>
+                                <td><strong>${r.rating}</strong> / 10</td>
+                            </tr>
+                        `;
+                    });
+                }
+                return;
+            }
+
+            alert('كود الدخول غير صحيح! تأكد من كود المعلمة أو الإدارة أو كود الطالبة الخاص.');
         }
 
         function switchTab(tabId, titleText, element) {
@@ -343,134 +478,4 @@
                 alert('الرجاء إدخال اسم الطالبة والمقرّر');
                 return;
             }
-            students.push({ id: Date.now(), addedBy: currentUser, role: currentRole, name, book });
-            localStorage.setItem('itqan_students', JSON.stringify(students));
-            document.getElementById('newStudentName').value = '';
-            document.getElementById('newStudentBook').value = '';
-            renderStudents();
-            alert('تمت إضافة الطالبة بنجاح!');
-        }
-
-        function deleteStudent(id) {
-            students = students.filter(s => s.id !== id);
-            localStorage.setItem('itqan_students', JSON.stringify(students));
-            renderStudents();
-        }
-
-        function renderStudents() {
-            const tbody = document.getElementById('studentsTableBody');
-            const select = document.getElementById('recitationStudentSelect');
-            tbody.innerHTML = '';
-            select.innerHTML = '';
-
-            // عرض الطالبات حسب المعلمة أو الكل للإدارة
-            let myStudents = students;
-            if(currentRole !== 'الإدارة العامة') {
-                myStudents = students.filter(s => s.role === currentRole);
-            }
-
-            document.getElementById('totalStudentsCount').textContent = myStudents.length;
-
-            if(myStudents.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" style="color:#777;">لا توجد طالبات مسجلات حتى الآن</td></tr>';
-                select.innerHTML = '<option>لا توجد طالبات</option>';
-                return;
-            }
-
-            myStudents.forEach(s => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${s.name} ${currentRole === 'الإدارة العامة' ? '<small style="color:#666;">('+s.role+')</small>' : ''}</td>
-                        <td>${s.book}</td>
-                        <td><button class="btn-delete" onclick="deleteStudent(${s.id})">حذف</button></td>
-                    </tr>
-                `;
-                select.innerHTML += `<option value="${s.name}">${s.name} (${s.book})</option>`;
-            });
-        }
-
-        function saveRecitation() {
-            const student = document.getElementById('recitationStudentSelect').value;
-            const session = document.getElementById('sessionType').value;
-            const from = document.getElementById('fromPart').value;
-            const to = document.getElementById('toPart').value;
-            const rating = document.getElementById('ratingSelect').value;
-
-            if(!student || !from || !to || student === 'لا توجد طالبات') {
-                alert('الرجاء إكمال بيانات التسميع');
-                return;
-            }
-
-            const record = {
-                id: Date.now(),
-                teacher: currentUser,
-                role: currentRole,
-                student,
-                session,
-                from,
-                to,
-                rating,
-                date: new Date().toLocaleDateString('ar-LY')
-            };
-
-            recitations.push(record);
-            localStorage.setItem('itqan_recitations', JSON.stringify(recitations));
-            alert(`تم حفظ تسميع الطالبة (${student}) بنجاح!`);
-            document.getElementById('fromPart').value = '';
-            document.getElementById('toPart').value = '';
-        }
-
-        function generateReport(type) {
-            const container = document.getElementById('reportOutputContainer');
-            const titleElem = document.getElementById('reportTitle');
-            const contentElem = document.getElementById('reportContent');
-            
-            container.style.display = 'block';
-
-            let myRecs = recitations;
-            let myStuds = students;
-            if(currentRole !== 'الإدارة العامة') {
-                myRecs = recitations.filter(r => r.role === currentRole);
-                myStuds = students.filter(s => s.role === currentRole);
-            }
-
-            let reportText = "";
-            if(type === 'weekly') {
-                titleElem.textContent = `📋 التقرير الأسبوعي (يوم الخميس)`;
-                reportText += `🌿 مركز السنة والمتون العلمية\n`;
-                reportText += `📌 التقرير الأسبوعي للإدارة\n`;
-                reportText += `👩‍‍🏫 المعلمة: ${currentUser} (${currentRole})\n`;
-                reportText += `👥 عدد الطالبات: ${myStuds.length}\n`;
-                reportText += `-----------------------------------\n`;
-                reportText += `📝 ملخص التسميع المسجل هذا الأسبوع:\n`;
-                
-                if(myRecs.length === 0) {
-                    reportText += `(لم يتم تسجيل تسميع بعد هذا الأسبوع)\n`;
-                } else {
-                    myRecs.forEach((r, index) => {
-                        reportText += `${index+1}. الطالبة: ${r.student} | من (${r.from}) إلى (${r.to}) | التقييم: ${r.rating} [${r.session}]\n`;
-                    });
-                }
-            } else {
-                titleElem.textContent = `📈 التقرير الشهري الشامل`;
-                reportText += `🌿 مركز السنة والمتون العلمية\n`;
-                reportText += `📌 التقرير الشهري الشامل\n`;
-                reportText += `👩‍🏫 المعلمة: ${currentUser} (${currentRole})\n`;
-                reportText += `👥 إجمالي الطالبات: ${myStuds.length}\n`;
-                reportText += `🎙️ إجمالي التسميع المنجز: ${myRecs.length}\n`;
-                reportText += `-----------------------------------\n`;
-                reportText += `سير العمل في الحلقة منتظم ولله الحمد وفق خطة المركز.\n`;
-            }
-
-            contentElem.textContent = reportText;
-        }
-
-        function copyReport() {
-            const text = document.getElementById('reportContent').textContent;
-            navigator.clipboard.writeText(text).then(() => {
-                alert('تم نسخ التقرير بنجاح! يمكنك لصقه وإرساله للإدارة الآن.');
-            });
-        }
-    </script>
-</body>
-</html>
+        
