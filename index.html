@@ -1,0 +1,270 @@
+<!<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة إتقان - النظام المتكامل</title>
+    <style>
+        :root {
+            --primary-green: #2c5e43;
+            --light-green: #eaf2ed;
+            --accent-gold: #c5a059;
+            --bg-color: #f8f9fa;
+            --text-color: #333333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding-bottom: 80px;
+        }
+        header {
+            background-color: var(--primary-green);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--accent-gold);
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 15px;
+        }
+        .section-content {
+            display: none;
+        }
+        .section-content.active {
+            display: block;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border-right: 5px solid var(--accent-gold);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 15px;
+            color: var(--primary-green);
+        }
+        .stat-card .number {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--accent-gold);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--primary-green);
+        }
+        select, input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .btn-save {
+            background-color: var(--primary-green);
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+        th {
+            background-color: var(--light-green);
+            color: var(--primary-green);
+        }
+        .status-done { color: #2e7d32; font-weight: bold; background: #e8f5e9; padding: 4px 8px; border-radius: 4px; }
+        .status-pending { color: #e65100; font-weight: bold; background: #fff3e0; padding: 4px 8px; border-radius: 4px; }
+        
+        nav.bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+        .nav-item {
+            text-align: center;
+            color: #666;
+            text-decoration: none;
+            font-size: 12px;
+            cursor: pointer;
+            flex: 1;
+        }
+        .nav-item.active {
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+        .nav-item span {
+            display: block;
+            font-size: 18px;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>🌿 منصة إتقان</h2>
+        <div id="headerTitle">لوحة المعلمة</div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. الرئيسية -->
+        <div id="section-home" class="section-content active">
+            <div class="card">
+                <h3 style="margin: 0 0 5px 0; color: var(--primary-green);">أهلاً بك يا أستاذة 🌷</h3>
+                <p style="margin: 0; color: #666; font-size: 14px;">مرحباً بك في نظام إدارة مركز السنة والمتون العلمية</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>عدد الطالبات</h3>
+                    <div class="number">18</div>
+                </div>
+                <div class="stat-card">
+                    <h3>تم تسميعهن اليوم</h3>
+                    <div class="number" style="color: #2e7d32;">14</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. تسجيل التسميع -->
+        <div id="section-recitation" class="section-content">
+            <div class="card">
+                <h3 style="margin-top: 0; color: var(--primary-green);">🎙️ تسجيل التسميع الذكي</h3>
+                <div class="form-group">
+                    <label>اختر الطالبة:</label>
+                    <select>
+                        <option>فاطمة محمد (آخر موضع: 15)</option>
+                        <option>عائشة علي (آخر موضع: 3)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display: flex; gap: 10px;">
+                    <div style="flex:1;"><label>من:</label><input type="number" placeholder="16"></div>
+                    <div style="flex:1;"><label>إلى:</label><input type="number" placeholder="20"></div>
+                </div>
+                <div class="form-group">
+                    <label>التقييم:</label>
+                    <select>
+                        <option>ممتاز</option>
+                        <option>جيد جداً</option>
+                        <option>جيد</option>
+                    </select>
+                </div>
+                <button class="btn-save" onclick="alert('تم حفظ التسميع وتحديث آخر موضع تلقائياً بنجاح!')">حفظ التسميع</button>
+            </div>
+        </div>
+
+        <!-- 3. السجل اليومي -->
+        <div id="section-daily" class="section-content">
+            <div class="card">
+                <h3 style="margin-top: 0; color: var(--primary-green);">📅 السجل اليومي للحلقة</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الطالبة</th>
+                            <th>المتن</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>فاطمة محمد</td>
+                            <td>الأربعون</td>
+                            <td><span class="status-done">✅ تم</span></td>
+                        </tr>
+                        <tr>
+                            <td>عائشة علي</td>
+                            <td>الأصول</td>
+                            <td><span class="status-pending">⏳ لم تسمع</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. الإدارة -->
+        <div id="section-admin" class="section-content">
+            <div class="card">
+                <h3 style="margin-top: 0; color: var(--primary-green);">📊 لوحة الإدارة الشاملة</h3>
+                <p>إجمالي حلقات المركز: <strong>14 حلقة</strong>[span_1](start_span)[span_1](end_span)</p>
+                <p>إجمالي طالبات المركز: <strong>236 طالبة</strong>[span_2](start_span)[span_2](end_span)</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- الشريط السفلي للتنقل -->
+    <nav class="bottom-nav">
+        <a class="nav-item active" onclick="switchTab('home', 'لوحة المعلمة', this)">
+            <span>🏠</span>الرئيسية
+        </a>
+        <a class="nav-item" onclick="switchTab('recitation', 'التسميع الذكي', this)">
+            <span>🎙️</span>التسميع
+        </a>
+        <a class="nav-item" onclick="switchTab('daily', 'السجل اليومي', this)">
+            <span>📅</span>السجل
+        </a>
+        <a class="nav-item" onclick="switchTab('admin', 'الإدارة', this)">
+            <span>📊</span>الإدارة
+        </a>
+    </nav>
+
+    <script>
+        function switchTab(tabId, titleText, element) {
+            document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('section-' + tabId).classList.add('active');
+            document.getElementById('headerTitle').textContent = titleText;
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+        }
+    </script>
+</body>
+</html>
