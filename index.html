@@ -22,20 +22,12 @@
         header {
             background-color: var(--primary-green);
             color: white;
-            padding: 15px 10px;
+            padding: 20px 10px;
             text-align: center;
             border-bottom: 3px solid var(--accent-gold);
         }
-        .header-logo {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--accent-gold);
-            margin-bottom: 5px;
-        }
         header h3 {
-            margin: 0 0 3px 0;
+            margin: 0 0 5px 0;
             font-size: 13px;
             color: var(--accent-gold);
         }
@@ -151,14 +143,6 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             text-align: center;
         }
-        .login-logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--accent-gold);
-            margin-bottom: 10px;
-        }
 
         /* نافذة سجل الطالبة */
         #studentModal {
@@ -231,10 +215,9 @@
 </head>
 <body>
 
-    <!-- شاشة تسجيل الدخول مع الشعار الرسمي -->
+    <!-- شاشة تسجيل الدخول -->
     <div id="login-screen">
         <div class="login-card">
-            <img src="logo.jpg" alt="شعار الوزارة" class="login-logo" onerror="this.style.display='none'">
             <h3 style="color: var(--primary-green); margin-top: 0; font-size: 13px;">وزارة الأوقاف والشؤون الإسلامية بنغازي</h3>
             <h2 style="color: var(--primary-green); margin: 5px 0 10px 0; font-size: 16px;">مركز السنة لتحفيظ المتون العلمية والسنة النبوية<br><span style="color: var(--accent-gold); font-size: 14px;">(مركز سعد بن معاذ)</span></h2>
             <p style="color: #666; font-size: 12px; margin-bottom: 15px;">الرجاء إدخال الاسم والكود المخصص لك للمتابعة</p>
@@ -247,7 +230,7 @@
                 <label>كود الدخول السري:</label>
                 <input type="text" id="userCodeInput" placeholder="أدخل الكود الخاص بك...">
             </div>
-            <button class="btn-save" onclick="loginSystem()">تسجيل الدخول</button>
+            <button class="btn-save" onclick="loginSystem(event)">تسجيل الدخول</button>
         </div>
     </div>
 
@@ -306,7 +289,6 @@
     <!-- لوحة المعلمة والإدارة -->
     <div id="main-system-ui">
         <header>
-            <img src="logo.jpg" alt="الشعار" class="header-logo" onerror="this.style.display='none'">
             <h3>وزارة الأوقاف والشؤون الإسلامية بنغازي</h3>
             <h1>مركز السنة لتحفيظ المتون العلمية والسنة النبوية (مركز سعد بن معاذ)</h1>
         </header>
@@ -413,7 +395,9 @@
         let students = JSON.parse(localStorage.getItem('itqan_students')) || [];
         let recitations = JSON.parse(localStorage.getItem('itqan_recitations')) || [];
 
-        function loginSystem() {
+        function loginSystem(event) {
+            if(event) event.preventDefault();
+            
             const name = document.getElementById('userNameInput').value.trim();
             const code = document.getElementById('userCodeInput').value.trim().toLowerCase();
             
@@ -483,4 +467,17 @@
             }
 
             alert('كود الدخول غير صحيح! تأكد من كتابة الكود بشكل صحيح (مثل t11 للحلقة الحادية عشر، أو admin123 للإدارة).');
-       
+        }
+
+        function switchTab(tabId, titleText, element) {
+            document.querySelectorAll('.section-content').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('section-' + tabId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+            if(tabId === 'students' || tabId === 'recitation') {
+                renderStudents();
+            }
+        }
+
+        function addStudent() {
+            const name = document.getElementById('newStudentName')
